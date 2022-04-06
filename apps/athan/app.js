@@ -1589,35 +1589,15 @@ function convertDate(str) {
 }
 
 
-E.setTimeZone(3);
-var d = new Date();
-var day = convertDate(d);
-var year = d.getFullYear();
-
-var x1 = lookupTable2022(day, year);
-//console.log(x1)
-let text = x1[0];
-const myArray = text.split(" ");
-let fajr = myArray[1];
-let sunrise = myArray[2];
-let dhuhr = myArray[3];
-let asr = myArray[4];
-let maghrib = myArray[5];
-let isha = myArray[6];
-let hDay = myArray[7];
-let hMonth = myArray[8];
-let hYear = myArray[9];
-
-//for next fajr
-text = x1[1];
-const myArray1 = text.split(" ");
-let fajrNext = myArray1[1];
+E.setTimeZone(20);
+var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
+var hDay, hMonth, hYear;
 
 // Load fonts
 require("Font7x11Numeric7Seg").add(Graphics);
 // position on screen
-const X = 160,
-	Y = 140;
+const X = 190,
+	Y = 165;
 var counterInterval;
 
 var exe ;
@@ -1667,18 +1647,18 @@ if( time1 >= sunrise && time1 < dhuhr && hh < 12) {
 		}
     
 		if (!exe) {
-		  g.clearRect(0,200,240,220);  
+		  g.clearRect(0,190,240,240);  
       g.drawString("Duhur "+dhuhr, 120, 220);
 		  return;
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString((minutesTime1-minutesPrayer(sunrise))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Sunrise "+sunrise, 120, 220);
 		}
 
@@ -1693,18 +1673,18 @@ else if(time1 < isha && time1 >= maghrib && hh > 12 ) {
 		}
 
 		if (!exe) {
-		  g.clearRect(0,200,240,220);  
+		  g.clearRect(0,190,240,240);  
       g.drawString("Isha "+isha, 120, 220);
       return;
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString((minutesTime1-minutesPrayer(maghrib))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Mgrib "+maghrib, 120, 220);
 		}
 }
@@ -1718,18 +1698,18 @@ else if(time1 >= asr && time1 < maghrib && hh > 12) {
 		}
 
 		if (!exe) {
-		  g.clearRect(0,200,240,220);  
+		  g.clearRect(0,190,240,240);  
       g.drawString("Mgrib "+maghrib, 120, 220);
       return;
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString((minutesTime1-minutesPrayer(asr))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Asr "+asr, 120, 220);
 		}
 }
@@ -1743,8 +1723,8 @@ else if( hh > 12 && time1 >= isha || (time1 < fajr &&  hh < 12)) {
 		}
 
 		if (!exe) {
-		  g.clearRect(0,200,240,220);
-      if (hh>12){
+		  g.clearRect(0,190,240,240);
+      if (hh>12 && hh<24){
         fajr = fajrNext;
       }
       g.drawString("Fajr "+fajr, 120, 220);
@@ -1752,12 +1732,12 @@ else if( hh > 12 && time1 >= isha || (time1 < fajr &&  hh < 12)) {
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString((minutesTime1-minutesPrayer(isha))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Isha "+isha, 120, 220);
 		}
 }
@@ -1771,18 +1751,18 @@ else if(time1 >= fajr && time1 < sunrise && hh < 12) {
 		}
 
 		if (!exe) {
-		  g.clearRect(0,200,240,220);  
+		  g.clearRect(0,190,240,240);  
       g.drawString("Sunrise "+sunrise, 120, 220);
       return;
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString((minutesTime1-minutesPrayer(fajr))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Fajr "+fajr, 120, 220);
 		}
 }
@@ -1796,31 +1776,69 @@ else{    //Asr prayer
 		}
 
 		if (!exe) {
-		  g.clearRect(0,200,240,220);  
+		  g.clearRect(0,190,240,240);  
       g.drawString("Asr "+asr, 120, 220);
       return;
 		}
 
 		if ((d.getSeconds()+1)%2==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
      g.drawString((minutesTime1-minutesPrayer(dhuhr))+" min", 120, 220);
 		}
 
     if ((d.getSeconds()+1)%4==0){
-      g.clearRect(0,200,240,220);
+      g.clearRect(0,190,240,240);
       g.drawString("Duhur "+dhuhr, 120, 220);
 		}
 }
 }
 
-
+var newDay= true;
+var nextDay;
 
 function draw() {
+  
+  
+var d = new Date();
+var day = convertDate(d);
+var year = d.getFullYear();
 
-  var d = new Date();
+
+if ((day-nextDay)!=0) {
+  newDay= true;
+  load();
+}
+
+if (newDay) {
+    
+var x1 = lookupTable2022(day, year);
+let text = x1[0];
+const myArray = text.split(" ");
+fajr = myArray[1];
+sunrise = myArray[2];
+dhuhr = myArray[3];
+asr = myArray[4];
+maghrib = myArray[5];
+isha = myArray[6];
+hDay = myArray[7];
+hMonth = myArray[8];
+hYear = myArray[9];
+
+//for next fajr
+text = x1[1];
+const myArray1 = text.split(" ");
+fajrNext = myArray1[1];
+
+newDay= false;
+nextDay = day;
+}
+
   var h = d.getHours(),
 		m = d.getMinutes();
   var hh;
+  if (h==0){
+    h=24;
+  }
   if ( h > 12 ){
     if (h==24){
       h=12;
@@ -1839,23 +1857,27 @@ function draw() {
 var time = (" " + h).substr(-2) + ":" + ("0" + m).substr(-2);
 	// Reset the state of the graphics library
 g.reset();
-	// draw the current time (4x size 7 segment)
-g.setFont("7x11Numeric7Seg", 4);
+	// draw the current time (6x size 7 segment)
+g.setFont("7x11Numeric7Seg", 6);
 g.setFontAlign(1, 1); // align right bottom
 g.drawString(time, X, Y, true /*clear background*/ );
 // draw the seconds (2x size 7 segment)
-g.setFont("7x11Numeric7Seg", 2);
-g.drawString(("0" + d.getSeconds()).substr(-2), X + 30, Y, true /*clear background*/ );
+g.setFont("7x11Numeric7Seg", 3);
+g.drawString(("0" + d.getSeconds()).substr(-2), X + 40, Y, true /*clear background*/ );
 // draw the date, in a normal font
-g.setFont("6x8");
+//g.setFont("6x8");
 g.setFontAlign(0, 1); // align center bottom
-g.setFont("6x8", 2);
+require("Font8x16").add(Graphics);
+g.setFont("8x16", 2.5);
+
+g.clearRect(0,0,240,90);
 g.drawString(hDay+"/"+hMonth+"/"+hYear+" H", 120, 40);
 var gMonth = d.getMonth()+1;
 if (gMonth < 10){
   gMonth = "0"+gMonth;  
 }
-g.drawString(d.getDate()+"/"+(gMonth)+"/"+d.getFullYear()+" G", 120, 65);
+
+g.drawString(d.getDate()+"/"+(gMonth)+"/"+d.getFullYear()+" G", 120, 70);
 
 prayerInterface(h,m,hh);
 
