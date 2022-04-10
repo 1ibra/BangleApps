@@ -1589,7 +1589,7 @@ function convertDate(str) {
 }
 
 
-E.setTimeZone(1);
+E.setTimeZone(3);
 var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
 var hDay, hMonth, hYear;
 
@@ -1829,6 +1829,9 @@ function draw() {
 
   if ((day-nextDay)!=0) {
     newDay= true;
+    E.on('init', function() {
+      draw();
+    });
     load();
   }
 
