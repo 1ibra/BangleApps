@@ -1589,7 +1589,7 @@ function convertDate(str) {
 }
 
 
-E.setTimeZone(23);
+E.setTimeZone(4);
 var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
 var hDay, hMonth, hYear;
 
