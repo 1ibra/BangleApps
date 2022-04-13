@@ -1589,7 +1589,7 @@ function convertDate(str) {
 }
 
 
-E.setTimeZone(3);
+//E.setTimeZone(3);
 var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
 var hDay, hMonth, hYear;
 
@@ -1603,6 +1603,7 @@ var counterInterval;
 
 var exe ;
 
+var countt=0;
 
 function prayerInterface(h,m,hh){
 
@@ -1624,6 +1625,7 @@ function prayerInterface(h,m,hh){
     function prayerTime(minutesTime1,x){
         var xxx=(minutesTime1 - x);
         if ( xxx <= 30 && xxx >=0 ){
+            countt=0;
             return true;
         }
         else{
@@ -1648,7 +1650,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);  
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           g.drawString("Duhur "+dhuhr, 120, 220);
           return;
         }
@@ -1674,7 +1679,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);  
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           g.drawString("Isha "+isha, 120, 220);
           return;
         }
@@ -1699,7 +1707,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);  
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           g.drawString("Mgrib "+maghrib, 120, 220);
           return;
         }
@@ -1724,7 +1735,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           if (hh>12 && hh<24){
             fajr = fajrNext;
           }
@@ -1752,7 +1766,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);  
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           g.drawString("Sunrise "+sunrise, 120, 220);
           return;
         }
@@ -1777,7 +1794,10 @@ function prayerInterface(h,m,hh){
         }
 
         if (!exe) {
-          g.clearRect(0,190,240,240);  
+          countt=countt+1;
+          if (countt==1){
+              g.clearRect(0,190,240,240);
+          }
           g.drawString("Asr "+asr, 120, 220);
           return;
         }
@@ -1801,13 +1821,13 @@ function todayPrayers(){
   g.setColor(0,1,0);
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
-  g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth+"/"+hYear+" H", 120, 40);
-  g.drawString("Fajr     "+fajr, 120, 70);
-  g.drawString("Sunrise "+sunrise, 120, 100);
-  g.drawString("Duhur    "+dhuhr, 120, 130);
-  g.drawString("Asr       "+asr, 120, 160);
-  g.drawString("Mgrib     "+maghrib, 120, 190);
-  g.drawString("Isha      "+isha, 120, 220);
+  g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth+"/"+hYear+" H", 120, 55);
+  g.drawString("Fajr     "+fajr, 120, 85);
+  g.drawString("Sunrise "+sunrise, 120, 115);
+  g.drawString("Duhur    "+dhuhr, 120, 145);
+  g.drawString("Asr       "+asr, 120, 175);
+  g.drawString("Mgrib     "+maghrib, 120, 205);
+  g.drawString("Isha      "+isha, 120, 235);
   
 }
 
@@ -1890,16 +1910,16 @@ function draw() {
   // draw the date, in a normal font
   //g.setFont("6x8");
   g.setFontAlign(0, 1); // align center bottom
-  g.setFont("8x16", 2.5);
+  g.setFont("8x16", 2);
 
-  g.clearRect(0,0,240,90);
-  g.drawString(hDay+"/"+hMonth+"/"+hYear+" H", 120, 40);
+  //g.clearRect(0,0,240,90);
+  g.drawString(hDay+"/"+hMonth+"/"+hYear+" H", 120, 60);
   var gMonth = d.getMonth()+1;
   if (gMonth < 10){
     gMonth = "0"+gMonth;  
   }
 
-  g.drawString(d.getDate()+"/"+(gMonth)+"/"+d.getFullYear()+" G", 120, 70);
+  g.drawString(d.getDate()+"/"+(gMonth)+"/"+d.getFullYear()+" G", 120, 90);
 
   prayerInterface(h,m,hh);
 
@@ -1932,13 +1952,13 @@ Bangle.showLauncher();
 g.clear();
 // draw immediately at first
 draw();
-var secondInterval = setInterval(draw, 200);
+var secondInterval = setInterval(draw, 250);
 // Stop updates when LCD is off, restart when on
 Bangle.on('lcdPower', on => {
 	if(secondInterval) clearInterval(secondInterval);
 	secondInterval = undefined;
 	if(on) {
-		secondInterval = setInterval(draw, 200);
+		secondInterval = setInterval(draw, 250);
 		draw(); // draw immediately
 	}
 });
