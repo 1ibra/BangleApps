@@ -3,9 +3,10 @@
   "shortName":"Prayer Time",
   "icon": "app.png",
   "version":"0.01",
-  "description": "This is a description of my awesome Prayer Time Alarm app",
-  "tags": "",
-  "supports" : ["BANGLEJS2"],  
+  "description": "This is a Prayer Time Alarm app",
+  "type": "clock",
+  "tags": "clock",
+  "supports" : ["BANGLEJS"],  
   "readme": "README.md",
   "storage": [
     {"name":"athan.app.js","url":"app.js"},
