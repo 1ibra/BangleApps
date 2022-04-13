@@ -1589,7 +1589,7 @@ function convertDate(str) {
 }
 
 
-E.setTimeZone(4);
+E.setTimeZone(3);
 var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
 var hDay, hMonth, hYear;
 
@@ -1798,6 +1798,7 @@ var toMenu = false;
 
 function todayPrayers(){
 
+  g.setColor(0,1,0);
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
   g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth+"/"+hYear+" H", 120, 40);
@@ -1815,7 +1816,7 @@ var newDay= true;
 var nextDay;
 
 function draw() {
-  g.clear();
+
 
   if (toMenu) {
     return todayPrayers();
@@ -1905,29 +1906,39 @@ function draw() {
 }
 
 setWatch(() => {
- 
-toMenu=true;
+
+  if (toMenu==false){ g.clear();
+  }
+  toMenu=true;
 
 }, BTN1, {repeat:true});
 
 setWatch(() => {
- 
-toMenu=false;
+
+  if (toMenu==true){ g.clear();
+  }
+  toMenu=false;
 
 }, BTN2, {repeat:true});
+
+setWatch(() => {
+ 
+Bangle.showLauncher();
+
+}, BTN3, {repeat:true});
 
 
 // Clear the screen once, at startup
 g.clear();
 // draw immediately at first
 draw();
-var secondInterval = setInterval(draw, 1000);
+var secondInterval = setInterval(draw, 200);
 // Stop updates when LCD is off, restart when on
 Bangle.on('lcdPower', on => {
 	if(secondInterval) clearInterval(secondInterval);
 	secondInterval = undefined;
 	if(on) {
-		secondInterval = setInterval(draw, 1000);
+		secondInterval = setInterval(draw, 200);
 		draw(); // draw immediately
 	}
 });
