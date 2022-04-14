@@ -1624,7 +1624,7 @@ function prayerInterface(h,m,hh){
 
     function prayerTime(minutesTime1,x){
         var xxx=(minutesTime1 - x);
-        if ( xxx <= 30 && xxx >=0 ){
+        if ( xxx <= 1 && xxx >=0 ){
             countt=0;
             return true;
         }
