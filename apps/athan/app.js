@@ -1642,7 +1642,6 @@ function prayerInterface(h,m,hh){
 
     if( time1 >= sunrise && time1 < dhuhr && hh < 12) {
 
-        //exe = prayerTime(minutesTime1,minutesPrayer(sunrise)); // This is to make count=0 ,so clear before draw Duhur
         exe = false;
 
         if (minutesTime1 == minutesPrayer(sunrise) && d.getSeconds() == 0 ){
@@ -1677,7 +1676,7 @@ function prayerInterface(h,m,hh){
 
         if (minutesTime1 == minutesPrayer(maghrib) && d.getSeconds() == 0 ){
             Bangle.buzz();
-            Bangle.beep(200, 4000);
+            Bangle.beep(500, 4000);
         }
 
         if (!exe) {
@@ -1705,7 +1704,7 @@ function prayerInterface(h,m,hh){
 
         if (minutesTime1 == minutesPrayer(asr) && d.getSeconds() == 0 ){
             Bangle.buzz();
-            Bangle.beep(200, 4000);
+            Bangle.beep(500, 4000);
         }
 
         if (!exe) {
@@ -1733,7 +1732,7 @@ function prayerInterface(h,m,hh){
 
         if (minutesTime1 == minutesPrayer(isha) && d.getSeconds() == 0 ){
             Bangle.buzz();
-            Bangle.beep(200, 4000);
+            Bangle.beep(500, 4000);
         }
 
         if (!exe) {
@@ -1764,7 +1763,7 @@ function prayerInterface(h,m,hh){
 
         if (minutesTime1 == minutesPrayer(fajr) && d.getSeconds() == 0 ){
             Bangle.buzz();
-            Bangle.beep(200, 4000);
+            Bangle.beep(500, 4000);
         }
 
         if (!exe) {
@@ -1792,7 +1791,7 @@ function prayerInterface(h,m,hh){
 
         if (minutesTime1 == minutesPrayer(dhuhr) && d.getSeconds() == 0 ){
             Bangle.buzz();
-            Bangle.beep(200, 4000);
+            Bangle.beep(500, 4000);
         }
 
         if (!exe) {
