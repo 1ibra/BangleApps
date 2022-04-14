@@ -1634,7 +1634,7 @@ function prayerInterface(h,m,hh){
     }
 
 
-    function minutesPrayer(x){
+        function minutesPrayer(x){
         var xPrayer=Number(x.substring(0,2))*60+Number(x.substring(3));
         return xPrayer;
     }
@@ -1642,11 +1642,13 @@ function prayerInterface(h,m,hh){
 
     if( time1 >= sunrise && time1 < dhuhr && hh < 12) {
 
-        exe = false;//prayerTime(minutesTime1,minutesPrayer(sunrise));
+        //exe = prayerTime(minutesTime1,minutesPrayer(sunrise)); // This is to make count=0 ,so clear before draw Duhur
+        exe = false;
 
-        if (minutesTime1 == minutesPrayer(sunrise) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(sunrise) && d.getSeconds() == 0 ){
             //Bangle.buzz();
             //Bangle.beep(200, 4000);
+            countt=0;
         }
 
         if (!exe) {
@@ -1673,7 +1675,7 @@ function prayerInterface(h,m,hh){
     else if(time1 < isha && time1 >= maghrib && hh > 12 ) {
         exe = prayerTime(minutesTime1,minutesPrayer(maghrib));
 
-        if (minutesTime1 == minutesPrayer(maghrib) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(maghrib) && d.getSeconds() == 0 ){
             Bangle.buzz();
             Bangle.beep(200, 4000);
         }
@@ -1701,7 +1703,7 @@ function prayerInterface(h,m,hh){
     else if(time1 >= asr && time1 < maghrib && hh > 12) {
         exe = prayerTime(minutesTime1,minutesPrayer(asr));
 
-        if (minutesTime1 == minutesPrayer(asr) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(asr) && d.getSeconds() == 0 ){
             Bangle.buzz();
             Bangle.beep(200, 4000);
         }
@@ -1729,7 +1731,7 @@ function prayerInterface(h,m,hh){
     else if( hh > 12 && time1 >= isha || (time1 < fajr &&  hh < 12)) {
         exe = prayerTime(minutesTime1,minutesPrayer(isha));
 
-        if (minutesTime1 == minutesPrayer(isha) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(isha) && d.getSeconds() == 0 ){
             Bangle.buzz();
             Bangle.beep(200, 4000);
         }
@@ -1760,7 +1762,7 @@ function prayerInterface(h,m,hh){
     else if(time1 >= fajr && time1 < sunrise && hh < 12) {
         exe = prayerTime(minutesTime1,minutesPrayer(fajr));
 
-        if (minutesTime1 == minutesPrayer(fajr) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(fajr) && d.getSeconds() == 0 ){
             Bangle.buzz();
             Bangle.beep(200, 4000);
         }
@@ -1788,7 +1790,7 @@ function prayerInterface(h,m,hh){
     else{    //Asr prayer
         exe = prayerTime(minutesTime1,minutesPrayer(dhuhr));
 
-        if (minutesTime1 == minutesPrayer(dhuhr) && d.getSeconds == 0 ){
+        if (minutesTime1 == minutesPrayer(dhuhr) && d.getSeconds() == 0 ){
             Bangle.buzz();
             Bangle.beep(200, 4000);
         }
@@ -1821,7 +1823,7 @@ function todayPrayers(){
   g.setColor(0,1,0);
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
-  g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth+"/"+hYear+" H", 120, 55);
+  g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth, 120, 55);
   g.drawString("Fajr     "+fajr, 120, 85);
   g.drawString("Sunrise "+sunrise, 120, 115);
   g.drawString("Duhur    "+dhuhr, 120, 145);
@@ -1930,6 +1932,7 @@ setWatch(() => {
   if (toMenu==false){ g.clear();
   }
   toMenu=true;
+  draw();
 
 }, BTN1, {repeat:true});
 
@@ -1938,6 +1941,7 @@ setWatch(() => {
   if (toMenu==true){ g.clear();
   }
   toMenu=false;
+  draw();
 
 }, BTN2, {repeat:true});
 
