@@ -1952,13 +1952,13 @@ Bangle.showLauncher();
 g.clear();
 // draw immediately at first
 draw();
-var secondInterval = setInterval(draw, 250);
+var secondInterval = setInterval(draw, 1000);
 // Stop updates when LCD is off, restart when on
 Bangle.on('lcdPower', on => {
 	if(secondInterval) clearInterval(secondInterval);
 	secondInterval = undefined;
 	if(on) {
-		secondInterval = setInterval(draw, 250);
+		secondInterval = setInterval(draw, 1000);
 		draw(); // draw immediately
 	}
 });
