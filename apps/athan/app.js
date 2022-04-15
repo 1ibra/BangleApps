@@ -1819,6 +1819,7 @@ var toMenu = false;
 
 function todayPrayers(){
 
+  backFromMenu=backFromMenu+1;
   g.setColor(0,1,0);
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
@@ -1829,6 +1830,11 @@ function todayPrayers(){
   g.drawString("Asr       "+asr, 120, 175);
   g.drawString("Mgrib     "+maghrib, 120, 205);
   g.drawString("Isha      "+isha, 120, 235);
+  if (backFromMenu > 10){    //back after 10 sec
+    toMenu=false;
+    g.clear();
+    draw();
+  }
   
 }
 
@@ -1926,11 +1932,13 @@ function draw() {
 
 }
 
+var backFromMenu;
 setWatch(() => {
 
   if (toMenu==false){ g.clear();
   }
   toMenu=true;
+  backFromMenu=0;
   draw();
 
 }, BTN1, {repeat:true});
