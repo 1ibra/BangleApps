@@ -1842,12 +1842,13 @@ function todayPrayers(){
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
   g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth, 120, 55);
-  g.drawString("Fajr     "+fajr, 120, 85);
   g.drawString("Sunrise "+sunrise, 120, 115);
-  g.drawString("Duhur    "+dhuhr, 120, 145);
   g.drawString("Asr       "+asr, 120, 175);
-  g.drawString("Mgrib     "+maghrib, 120, 205);
   g.drawString("Isha      "+isha, 120, 235);
+  g.setColor(1,0,1);
+  g.drawString("Fajr     "+fajr, 120, 85);
+  g.drawString("Duhur    "+dhuhr, 120, 145);
+  g.drawString("Mgrib     "+maghrib, 120, 205);
   if (backFromMenu > 10){    //back after 10 sec
     toMenu=false;
     g.clear();
