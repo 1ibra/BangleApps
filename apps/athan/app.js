@@ -13,7 +13,7 @@ function  lookupTable2022(x, y)  {
       return z1;
      }
   if (y > 2025 || y < 2022) {
-      z1 = "Invalid Input Year";
+      z1 = [" 00:00 00:00 00:00 00:00 00:00 00:00 0 00 0000 ", " 00:00 00:00 00:00 00:00 00:00 00:00 0 00 0000 "];
       return z1;
      }
   
@@ -206,8 +206,13 @@ function  lookupTable2022(x, y)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
       
   else {
@@ -397,13 +402,18 @@ function  lookupTable2022(x, y)  {
 };
 
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
 }
 
 function  lookupTable2023(x)  {
-  //y= Number(x);
+
   if (x > 182) {
       day= {
 183  : " 04:15 05:42 12:25 03:44 07:08 08:38 14 12 1444 " ,
@@ -593,8 +603,13 @@ function  lookupTable2023(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
       
   else {
@@ -785,8 +800,13 @@ function  lookupTable2023(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
 }
 
@@ -982,8 +1002,13 @@ function  lookupTable2024(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
       
   else {
@@ -1174,8 +1199,13 @@ function  lookupTable2024(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
 }
 
@@ -1370,8 +1400,13 @@ function  lookupTable2025(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
       
   else {
@@ -1562,8 +1597,13 @@ function  lookupTable2025(x)  {
 
   
   let z=day[x];
-  let zz=day[x+1];
-  return [z,zz];
+  let z1=day[x+1];
+  let z2=day[x+2];
+  let z3=day[x+3];
+  let z4=day[x+4];
+  let z5=day[x+5];
+  let z6=day[x+6];
+  return [z,z1,z2,z3,z4,z5,z6];
 }
 }
 
@@ -1590,7 +1630,7 @@ function convertDate(str) {
 
 
 var locale = require("locale");
-var fajr, sunrise, dhuhr, asr, maghrib, isha, fajrNext;
+var fajr, sunrise, dhuhr, asr, maghrib, isha, fajr1;
 var hDay, hMonth, hYear;
 
 // Load fonts
@@ -1731,7 +1771,7 @@ function prayerInterface(h,m,hh){
               g.clearRect(0,180,240,240);
           }
           if (hh>12 && hh<24){
-            fajr = fajrNext;
+            fajr = fajr1;
             minutesTime1 = -1 * ((12-(hh%12)-1)*60+(60-m));
           }
           if (hh==24){
@@ -1791,24 +1831,28 @@ function prayerInterface(h,m,hh){
     }
 }
 
-var toMenu = false;
+var toMenu = 0;
 
 function todayPrayers(){
 
   backFromMenu=backFromMenu+1;
-  g.setColor(0,1,0);
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
-  g.drawString(Date().toString().substring(0,3)+" "+hDay+"/"+hMonth, 120, 55);
-  g.drawString("Sunrise "+sunrise, 120, 115);
-  g.drawString("Asr       "+asr, 120, 175);
-  g.drawString("Isha      "+isha, 120, 235);
+  g.setColor(0,1,0);
+  var d = new Date();
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'];
+  let text1 = x1[(toMenu-1)];
+  var prayerArray = text1.split(" ");
+  g.drawString(days[d.getDay()+(toMenu-1)]+" "+prayerArray[7]+"/"+prayerArray[8], 120, 55);
+  g.drawString("Sunrise "+prayerArray[2], 120, 115);
+  g.drawString("Asr       "+prayerArray[4], 120, 175);
+  g.drawString("Isha      "+prayerArray[6], 120, 235);
   g.setColor(1,1,1);
-  g.drawString("Fajr     "+fajr, 120, 85);
-  g.drawString("Duhur    "+dhuhr, 120, 145);
-  g.drawString("Mgrib     "+maghrib, 120, 205);
-  if (backFromMenu > 10){    //back after 10 sec
-    toMenu=false;
+  g.drawString("Fajr     "+prayerArray[1], 120, 85);
+  g.drawString("Duhur    "+prayerArray[3], 120, 145);
+  g.drawString("Mgrib     "+prayerArray[5], 120, 205);
+  if (backFromMenu > 9){    //back after 9 sec
+    toMenu= 0;
     g.clear();
     draw();
   }
@@ -1818,11 +1862,12 @@ function todayPrayers(){
 
 var newDay= true;
 var nextDay;
+var x1;
 
 function draw() {
 
 
-  if (toMenu) {
+  if (toMenu > 0) {
     return todayPrayers();
   }
 
@@ -1839,7 +1884,7 @@ function draw() {
 
   if (newDay) {
 
-    var x1 = lookupTable2022(day, year);
+    x1 = lookupTable2022(day, year);
     let text = x1[0];
     const myArray = text.split(" ");
     fajr = myArray[1];
@@ -1855,7 +1900,7 @@ function draw() {
     //for next fajr
     text = x1[1];
     const myArray1 = text.split(" ");
-    fajrNext = myArray1[1];
+    fajr1 = myArray1[1];
 
     newDay= false;
     nextDay = day;
@@ -1912,9 +1957,11 @@ function draw() {
 var backFromMenu;
 setWatch(() => {
 
-  if (toMenu==false){ g.clear();
-  }
-  toMenu=true;
+  g.clear();
+  toMenu = toMenu+1;
+  if (toMenu == 8){
+    toMenu = 0;  
+  } 
   backFromMenu=0;
   draw();
 
@@ -1922,9 +1969,11 @@ setWatch(() => {
 
 setWatch(() => {
 
-  if (toMenu==true){ g.clear();
+  g.clear();
+  if (toMenu > 0){
+    toMenu = toMenu-1;  
   }
-  toMenu=false;
+  backFromMenu=0;
   draw();
 
 }, BTN2, {repeat:true});
