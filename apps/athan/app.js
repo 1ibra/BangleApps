@@ -1804,7 +1804,7 @@ function prayerInterface(h,m,hh){
           return;
         }
 
-        g.drawString("Fajr "+fajr, 120, 210, true /*clear background*/ );
+        g.drawString("Fajr "+fajr, 120, 205, true /*clear background*/ );
         g.drawString((minutesTime1-minutesPrayer(fajr))+" min ago", 120, 238, true /*clear background*/ );
     }
 
@@ -1843,7 +1843,7 @@ function todayPrayers(){
   var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat'];
   let text1 = x1[(toMenu-1)];
   var prayerArray = text1.split(" ");
-  g.drawString(days[d.getDay()+(toMenu-1)]+" "+prayerArray[7]+"/"+prayerArray[8], 120, 55);
+  g.drawString(days[(d.getDay()+(toMenu-1))%7]+" "+prayerArray[7]+"/"+prayerArray[8], 120, 55);
   g.drawString("Sunrise "+prayerArray[2], 120, 115);
   g.drawString("Asr       "+prayerArray[4], 120, 175);
   g.drawString("Isha      "+prayerArray[6], 120, 235);
@@ -1906,8 +1906,8 @@ function draw() {
     nextDay = day;
   }
 
-  var h = d.getHours(),
-		m = d.getMinutes();
+  var h = d.getHours()-7,
+		m = d.getMinutes()+15;
   var hh;
   if (h==0){
     h=24;
