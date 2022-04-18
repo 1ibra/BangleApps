@@ -1906,8 +1906,8 @@ function draw() {
     nextDay = day;
   }
 
-  var h = d.getHours()-7,
-		m = d.getMinutes()+15;
+  var h = d.getHours(),
+		m = d.getMinutes();
   var hh;
   if (h==0){
     h=24;
