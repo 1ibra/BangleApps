@@ -1941,7 +1941,7 @@ function draw() {
   g.setFontAlign(0, 1); // align center bottom
   g.setFont("8x16", 2);
 
-  //g.clearRect(0,0,240,90);
+  //g.clearRect(0,50,260,260);
   g.drawString(hDay+"/"+hMonth+"/"+hYear+" H", 120, 60);
   var gMonth = d.getMonth()+1;
   if (gMonth < 10){
@@ -1957,7 +1957,7 @@ function draw() {
 var backFromMenu;
 setWatch(() => {
 
-  g.clear();
+  g.clearRect(0,15,260,260);
   toMenu = toMenu+1;
   if (toMenu == 8){
     toMenu = 0;  
@@ -1969,7 +1969,7 @@ setWatch(() => {
 
 setWatch(() => {
 
-  g.clear();
+  g.clearRect(0,15,260,260);
   if (toMenu > 0){
     toMenu = toMenu-1;  
   }
@@ -1996,7 +1996,7 @@ Bangle.on('lcdPower', on => {
 	secondInterval = undefined;
 	if(on) {
 		secondInterval = setInterval(draw, 1000);
-    g.clear();
+    g.clearRect(0,15,260,260);
 		draw(); // draw immediately
 	}
 });
