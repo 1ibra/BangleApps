@@ -1797,7 +1797,7 @@ function prayerInterface(h,m,hh){
         if (!exe) {
           countt=countt+1;
           if (countt==1){
-              g.clearRect(0,180,240,240);
+              g.clearRect(0,175,240,240);
           }
           g.drawString("Sunrise "+sunrise, 120, 210);
           g.drawString("in "+toPrayerTime(minutesTime1,minutesPrayer(sunrise)), 120, 238, true /*clear background*/ );
