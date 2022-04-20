@@ -1853,7 +1853,7 @@ function todayPrayers(){
   g.drawString("Mgrib     "+prayerArray[5], 120, 205);
   if (backFromMenu > 9){    //back after 9 sec
     toMenu= 0;
-    g.clear();
+    g.clearRect(0,27,260,260);
     draw();
   }
   
