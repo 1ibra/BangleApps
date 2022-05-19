@@ -1,0 +1,15 @@
+{ "id": "athanCalculation",
+  "name": "Prayer Time Alarm1",
+  "shortName":"Prayer Time1",
+  "icon": "app.png",
+  "version":"0.01",
+  "description": "This is a Prayer Time Alarm app using Calculation",
+  "type": "clock",
+  "tags": "clock",
+  "supports" : ["BANGLEJS"],  
+  "readme": "README.md",
+  "storage": [
+    {"name":"athanCalculation.app.js","url":"app.js"},
+    {"name":"athanCalculation.img","url":"app-icon.js","evaluate":true}
+  ]
+}
