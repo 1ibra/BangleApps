@@ -1735,7 +1735,7 @@ function prayerInterface(h,m,hh){
     }
 
 
-    if( time1 >= sunrise && time1 < dhuhr && hh < 12) {
+    if( time1 >= sunrise && time1 < dhuhr && hh <= 12) {
 
         exe = false;
 
@@ -1778,7 +1778,7 @@ function prayerInterface(h,m,hh){
           return;
         }
 
-        g.drawString("Maghrib "+maghrib, 120, 210, true /*clear background*/ );
+        g.drawString("Maghrib "+maghrib, 120, 205, true /*clear background*/ );
         g.drawString((minutesTime1-minutesPrayer(maghrib))+" min ago", 120, 238, true /*clear background*/ );
     }
 
@@ -1795,7 +1795,7 @@ function prayerInterface(h,m,hh){
           if (countt==1){
               g.clearRect(0,180,240,240);
           }
-          g.drawString("Mgrib "+maghrib, 120, 210);
+          g.drawString("Mgrib "+maghrib, 120, 205);
            g.drawString("in "+toPrayerTime(minutesTime1,minutesPrayer(maghrib)), 120, 238, true /*clear background*/ );
           return;
         }
@@ -1867,6 +1867,9 @@ function prayerInterface(h,m,hh){
           countt=countt+1;
           if (countt==1){
               g.clearRect(0,180,240,240);
+          }
+          if (hh==12){
+            minutesTime1 = (hh%12)*60+m;
           }
           g.drawString("Asr "+asr, 120, 210);
           g.drawString("in "+toPrayerTime(minutesTime1,minutesPrayer(asr)), 120, 238, true /*clear background*/ );
