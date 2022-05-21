@@ -2595,6 +2595,9 @@ setWatch(() => {
 
 setWatch(() => {
 
+  if (toMenu == 0){
+    return;
+  }
   g.clearRect(0,27,260,260);
   if (toMenu > 0){
     toMenu = toMenu-1;  
