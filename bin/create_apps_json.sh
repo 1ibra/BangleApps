@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # ================================================================
 # apps.json used to contain the metadata for every app. Now the
 # metadata is stored in each apps's directory - app/yourapp/metadata.js
@@ -23,7 +23,7 @@ echo "[" > "$outfile"
 first=1
 for app in apps/*/; do 
   echo "Processing $app..."; 
-  if [[ "$app" =~ ^apps/_example.* ]]; then
+  if [[ "$app" =~ ^apps/_example.* ]] || [ ! -e "$app/"metadata.json ]; then
     echo "Ignoring $app"
   else
     if [ $first -eq 1 ]; then
@@ -37,7 +37,7 @@ for app in apps/*/; do
 done
 echo "]" >> "$outfile"
 
-if [ -z "$1"]; then
+if [ -z "$1" ]; then
   # Running with no arguments: prevent accidental commit of modified apps.json.
   # You can use `create_apps.json.sh apps.json` if you really want to both
   # overwrite and still commit apps.json

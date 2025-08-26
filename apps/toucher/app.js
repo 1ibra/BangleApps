@@ -85,7 +85,7 @@ function render(){
   const visibleApps = APPS.filter(app => app.x >= STATE.offset-HALF && app.x <= STATE.offset+WIDTH-HALF );
 
   let cycle = 0;
-  let lastCycle = visibleApps.length;
+  //let lastCycle = visibleApps.length;
   
   visibleApps.forEach(app => {
     cycle++;
@@ -255,7 +255,7 @@ function run(){
     if (process.env.HWVERSION == 1) Bangle.setLCDMode();
     g.clear();
     g.flip();
-    E.showMessage("Loading...");
+    E.showMessage(/*LANG*/"Loading...");
     load(app.src);
   }
 

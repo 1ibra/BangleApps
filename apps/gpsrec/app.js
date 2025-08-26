@@ -22,7 +22,6 @@ function showMainMenu() {
     '': { 'title': 'GPS Record' },
     'RECORD': {
       value: !!settings.recording,
-      format: v=>v?"On":"Off",
       onchange: v => {
         settings.recording = v;
         updateSettings();
@@ -126,7 +125,7 @@ function asTime(v){
 
 function viewTrack(n, info) {
   if (!info) {
-    E.showMessage("Loading...","GPS Track "+n);
+    E.showMessage(/*LANG*/"Loading...","GPS Track "+n);
     info = getTrackInfo(n);
   }
   const menu = {
@@ -191,7 +190,6 @@ function plotTrack(info) {
   E.showMessage("Drawing...","GPS Track "+info.fn);
   g.flip(); // on buffered screens, draw a not saying we're busy
   g.clear(1);
-  var s = require("Storage");
   var cx = g.getWidth()/2;
   var cy = 24 + (g.getHeight()-24)/2;
   g.setColor(1,0.5,0.5);
@@ -248,7 +246,7 @@ function plotTrack(info) {
   g.fillCircle(ox,oy,5);
   if (info.qOSTM) g.setColor(0, 0, 0);
   else g.setColor(g.theme.fg);
-  g.drawString(require("locale").distance(dist),g.getWidth() / 2, g.getHeight() - 20);
+  g.drawString(require("locale").distance(dist,2),g.getWidth() / 2, g.getHeight() - 20);
   g.setFont("6x8",2);
   g.setFontAlign(0,0,3);
   g.drawString("Back",g.getWidth() - 10, g.getHeight()/2);
@@ -268,7 +266,6 @@ function plotGraph(info, style) {
   var infc = new Uint16Array(80);
   var title;
   var lt = 0; // last time
-  var tn = 0; // count for each time period
   var strt, dur = info.duration;
   var f = require("Storage").open(filename,"r");
   if (f===undefined) return;

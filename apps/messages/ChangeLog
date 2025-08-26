@@ -1,30 +1,14 @@
-0.01: New App!
-0.02: Add 'messages' library
-0.03: Fixes for Bangle.js 1
-0.04: Add require("messages").clearAll()
-0.05: Handling of message actions (ok/clear)
-0.06: New messages now go at the start (fix #898)
-      Answering true/false now exits the messages app if no new messages
-      Back now marks a message as read
-      Clicking top-left opens a menu which allows you to delete a message or mark unread
-0.07: Added settings menu with option to choose vibrate pattern and frequency (fix #909)
-0.08: Fix rendering of long messages (fix #969)
-      buzz on new message (fix #999)
-0.09: Message now disappears after 60s if no action taken and clock loads (fix 922)
-      Fix phone icon (#1014)
-0.10: Respect the 'new' attribute if it was set from iOS integrations
-0.11: Open app when touching the widget (Bangle.js 2 only)
-0.12: Extra app-specific notification icons
-      New animated notifcationicon (instead of large blinking 'MESSAGES')
-      Added screenshots
-0.13: Add /*LANG*/ comments for internationalisation
-      Add 'Delete All' option to message options
-      Now update correctly when 'require("messages").clearAll()' is called
-0.14: Hide widget when all unread notifications are dismissed from phone
-0.15: Don't buzz when Quiet Mode is active
-0.16: Fix text wrapping so it fits the screen even if title is big (fix #1147)
-0.17: Fix: Get dynamic dimensions of notify icon, fixed notification font
-0.18: Use app-specific icon colors
-      Spread message action buttons out
-      Back button now goes back to list of messages
-      If showMessage called with no message (eg all messages deleted) now return to the clock (fix #1267)
+0.55: Moved messages library into standalone library
+0.56: Fix handling of music messages
+0.57: Optimize saving empty message list
+0.58: show/hide "messages" widget directly, instead of through library stub
+0.59: fixes message timeout by using setinterval, as it was intended. So the buzz is triggered every x seconds until the timeout occours.
+0.60: Bump version to allow new buzz.js module to be loaded - fixes memory/performance hog when buzz called
+0.61: Add repeatCalls option to allow different repeat settings for messages vs calls
+0.62: Add option for driving on left (affects roundabout icons in navigation)
+0.63: Add option to not open the first unread message
+0.64: Only load from storage once in settings
+0.65: Fix settings error introduced by two conflicting changes
+0.66: Fix 'Auto-Open Unread Msg' polarity - previously checking the box would ignore unread messages
+0.67: Ensure default vibration pattern is longer
+      Add Option to show widgets (Message GUI 0.86 removes them by default)

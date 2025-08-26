@@ -8,7 +8,6 @@ var alarms = require("Storage").readJSON("hardalarm.json",1)||[];
     msg : "Eat chocolate",
     last : 0, // last day of the month we alarmed on - so we don't alarm twice in one day!
     rp : true, // repeat
-    as : false, // auto snooze
   }
 ];*/
 
@@ -29,7 +28,7 @@ function showMainMenu() {
     'New Alarm': ()=>editAlarm(-1)
   };
   alarms.forEach((alarm,idx)=>{
-    txt = (alarm.on?"on  ":"off ")+formatTime(alarm.hr);
+    let txt = (alarm.on?"on  ":"off ")+formatTime(alarm.hr);
     if (alarm.rp) txt += " (repeat)";
     menu[txt] = function() {
       editAlarm(idx);
@@ -45,40 +44,31 @@ function editAlarm(alarmIndex) {
   var mins = 0;
   var en = true;
   var repeat = true;
-  var as = false;
   if (!newAlarm) {
     var a = alarms[alarmIndex];
     hrs = 0|a.hr;
     mins = Math.round((a.hr-hrs)*60);
     en = a.on;
     repeat = a.rp;
-    as = a.as;
   }
   const menu = {
     '': { 'title': 'Alarms' },
-    'Hours': {
-      value: hrs,
-      onchange: function(v){if (v<0)v=23;if (v>23)v=0;hrs=v;this.value=v;} // no arrow fn -> preserve 'this'
+    /*LANG*/'Hours': {
+      value: hrs, min : 0, max : 23, wrap : true,
+      onchange: v => hrs=v
     },
-    'Minutes': {
-      value: mins,
-      onchange: function(v){if (v<0)v=59;if (v>59)v=0;mins=v;this.value=v;} // no arrow fn -> preserve 'this'
+    /*LANG*/'Minutes': {
+      value: mins, min : 0, max : 59, wrap : true,
+      onchange: v => mins=v
     },
-    'Enabled': {
+    /*LANG*/'Enabled': {
       value: en,
-      format: v=>v?"On":"Off",
       onchange: v=>en=v
     },
-    'Repeat': {
+    /*LANG*/'Repeat': {
       value: en,
-      format: v=>v?"Yes":"No",
       onchange: v=>repeat=v
     },
-    'Auto snooze': {
-      value: as,
-      format: v=>v?"Yes":"No",
-      onchange: v=>as=v
-    }
   };
   function getAlarm() {
     var hr = hrs+(mins/60);
@@ -89,7 +79,7 @@ function editAlarm(alarmIndex) {
     // Save alarm
     return {
       on : en, hr : hr,
-      last : day, rp : repeat, as: as
+      last : day, rp : repeat
     };
   }
   menu["> Save"] = function() {

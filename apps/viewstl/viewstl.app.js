@@ -222,7 +222,6 @@ function readSTL(fn) {
   edges = new Uint8Array(Math.max(faces.length/3,24))
   p_edges = E.getAddressOf(edges, true);
   var fp=0, p=0;
-  var nf = 0;
   g.setColor(0.9, 0.9, 0.9);
   g.drawRect(20, 140, 220, 160);
   g.setColor(0.6, 0.6, 0.9);
@@ -354,7 +353,7 @@ function loadFile(fn) {
   Bangle.setLCDMode("direct");
   g.clear();
   E.showMenu();
-  E.showMessage("Loading...", fn);
+  E.showMessage(/*LANG*/"Loading...", fn);
   readSTL(fn);
   zDist = 5*largestExtent(points);
   g.clear();

@@ -25,7 +25,6 @@
 //////////////////////////////////////////////////////////////////////////////
 /*                              ==ASSETS==                                  */
 
-const heatshrink = require('heatshrink');
 
 const enc = x => {
     const d = btoa(require("heatshrink").compress(x));
@@ -60,7 +59,8 @@ const prepFont = (name, data) => {
     let width = m[2] == '*' ? null : +m[2];
     let c = null, o = 0;
     lines.forEach((line, l) => {
-      if (m = /^(<*)(=)([*\d]*)(=*)(>*)$/.exec(line) || /^(<*)(-)(.)(-*)(>*)$/.exec(line)) {
+      m = /^(<*)(=)([*\d]*)(=*)(>*)$/.exec(line) || /^(<*)(-)(.)(-*)(>*)$/.exec(line);
+      if (m) {
         const h = m[2] == '=';
         if (m[1].length > desc || h && m[1].length != desc)
           throw new Error('Invalid descender height at ' + l);
@@ -89,10 +89,10 @@ const prepFont = (name, data) => {
     const xoffs = Uint8Array(lines.length);
     const ypos = Uint16Array(lines.length);
     ypos.fill(0xffff);
-    const w0 = lengths[min];
+    //const w0 = lengths[min];
     let widths = '';
     for (c = min, o = 0; c <= max; c++) {
-        for (i = 0, j = offsets[c]; i < lengths[c]; i++) {
+        for (let i = 0, j = offsets[c]; i < lengths[c]; i++) {
             xoffs[j] = asc + body + adjustments[c] - 1;
             ypos[j++] = o++;
         }
@@ -113,7 +113,7 @@ const prepFont = (name, data) => {
     return x;
 };
 
-res = `
+let res = `
 const heatshrink = require('heatshrink');
 const dec = x => E.toString(heatshrink.decompress(atob(x)));
 `;

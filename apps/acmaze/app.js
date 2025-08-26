@@ -11,13 +11,10 @@ function Maze(n) {
   this.margin = Math.floor((g.getHeight()-this.total_length)/2);
   this.ball_x = 0;
   this.ball_y = 0;
-  this.clearScreen = function() {
-    g.clearRect(
-      0, this.margin,
-      g.getWidth(), this.margin+this.total_length
-    );
-  };
-  this.clearScreen();
+  // This voodoo is needed because otherwise
+  // bottom line widgets (like digital clock)
+  // disappear during maze generation
+  Bangle.drawWidgets();
   g.setColor(g.theme.fg);
   for (let i=0; i<=n; i++) {
     g.drawRect(
@@ -57,7 +54,7 @@ function Maze(n) {
     // Abort if BTN1 pressed [grace period for menu]
     // (for some reason setWatch() fails inside constructor)
     if (ngroups<n*n-16 && digitalRead(BTN1)) {
-      aborting = true;
+      //aborting = true;
       return;
     }
     from_group = to_group = -1;
@@ -66,7 +63,7 @@ function Maze(n) {
       if (Math.random()<0.5 && candidates_down.length || !candidates_right.length) {
         trying_down = true;
       }
-      let candidates = trying_down ? candidates_down : candidates_right;
+      let candidates = trying_down ? candidates_down : candidates_right,
           candidate_index = Math.floor(Math.random()*candidates.length),
           cell = candidates.splice(candidate_index, 1)[0],
           r = Math.floor(cell/n),
@@ -105,11 +102,6 @@ function Maze(n) {
       }
     }
   }
-  this.clearScreen = function() {
-    g.clearRect(
-      0, MARGIN, g.getWidth(), g.getHeight()-MARGIN-1
-    );
-  };
   this.clearCell = function(r, c) {
     if (!r && !c) {
       g.setColor("#ffff00");
@@ -214,7 +206,7 @@ function Maze(n) {
     return false;
   };
   this.tick = function() {
-    accel = Bangle.getAccel();
+    let accel = Bangle.getAccel();
     if (this.ball_x%this.wall_length) {
       this.try_move_horizontally(accel.x);
     } else if (this.ball_y%this.wall_length) {
@@ -251,7 +243,7 @@ function timeToText(t) { // Courtesy of stopwatch app
   return text;
 }
 
-let aborting = false;
+//let aborting = false;
 let start_time = 0;
 let duration = 0;
 let maze=null;
@@ -263,19 +255,19 @@ let mazeMenu = {
   "< Exit": function() { setTimeout(load, 100); } // timeout voodoo prevents deadlock
 };
 
-g.clear(true);
+g.reset();
 Bangle.loadWidgets();
 Bangle.drawWidgets();
 Bangle.setLocked(false);
 Bangle.setLCDTimeout(0);
 E.showMenu(mazeMenu);
-let maze_interval = setInterval(
+/*let maze_interval =*/ setInterval(
   function() {
     if (maze) {
       if (digitalRead(BTN1) || maze.status==STATUS_ABORTED) {
         maze = null;
         start_time = duration = 0;
-        aborting = false;
+        //aborting = false;
         setTimeout(function() {E.showMenu(mazeMenu); }, 100);
         return;
       }
@@ -289,7 +281,7 @@ let maze_interval = setInterval(
         duration = Date.now()-start_time;
         g.setFontAlign(0,0).setColor(g.theme.fg);
         g.setFont("Vector",18);
-        g.drawString(`Solved ${maze.n}X${maze.n} in\n ${timeToText(duration)} \nClick to play again`, g.getWidth()/2, g.getHeight()/2, true);
+        g.drawString(`Solved ${maze.n}X${maze.n} in\n ${timeToText(duration)} \nBtn1 to play again`, g.getWidth()/2, g.getHeight()/2, true);
       }
     }
   }, 25);

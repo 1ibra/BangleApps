@@ -31,6 +31,13 @@
           writeSettings(settings);
         },
       },
+      "CountDown Buzz": {
+        value: !!settings.countDownBuzz,
+        onchange: (value) => {
+          settings.countDownBuzz = value;
+          writeSettings(settings);
+        },
+      },
       "Pause Between": {
         value: settings.pauseBetween,
         min: 1,
@@ -74,4 +81,4 @@
 
   settings = readSettings();
   showMainMenu();
-});
+})

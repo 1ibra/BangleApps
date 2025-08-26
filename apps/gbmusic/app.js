@@ -10,15 +10,15 @@ const BANGLE2 = process.env.HWVERSION===2;
 
 /**
  * @param {string} text
- * @return {number} Maximum font size to make text fit on screen
+ * @param {number} w Width to fit text in
+ * @return {number} Maximum font size to make text fit
  */
-function fitText(text) {
+function fitText(text, w) {
   if (!text.length) {
     return Infinity;
   }
   // make a guess, then shrink/grow until it fits
-  const w = Bangle.appRect.w,
-    test = (s) => g.setFont("Vector", s).stringWidth(text);
+  const test = (s) => g.setFont("Vector", s).stringWidth(text);
   let best = Math.floor(100*w/test(100));
   if (test(best)===w) { // good guess!
     return best;
@@ -86,12 +86,12 @@ function infoColor(name) {
  * @param l
  */
 function rScroller(l) {
-  g.setFont("Vector", Math.round(g.getHeight()*l.fsz.slice(0, -1)/100));
+  var size=l.font.split(":")[1].slice(0,-1);
+  g.setFont("Vector", Math.round(g.getHeight()*size/100));
   const w = g.stringWidth(l.label)+40,
     y = l.y+l.h/2;
   l.offset = l.offset%w;
-  g.setClipRect(l.x, l.y, l.x+l.w-1, l.y+l.h-1)
-    .setColor(l.col).setBgColor(l.bgCol) // need to set colors: iScroll calls this function outside Layout
+  g.setColor(l.col).setBgColor(l.bgCol) // need to set colors: iScroll calls this function outside Layout
     .setFontAlign(-1, 0) // left center
     .clearRect(l.x, l.y, l.x+l.w-1, l.y+l.h-1)
     .drawString(l.label, l.x-l.offset+40, y)
@@ -106,7 +106,7 @@ function rTitle(l) {
     rScroller(l); // already scrolling
     return;
   }
-  let size = fitText(l.label);
+  let size = fitText(l.label, l.w);
   if (size<l.h/2) {
     // the title is too long: start the scroller
     scrollStart();
@@ -119,7 +119,7 @@ function rTitle(l) {
  * @param l
  */
 function rInfo(l) {
-  let size = fitText(l.label);
+  let size = fitText(l.label, l.w);
   if (size>l.h) {
     size = l.h;
   }
@@ -127,80 +127,28 @@ function rInfo(l) {
     .setFontAlign(0, -1) // center top
     .drawString(l.label, l.x+l.w/2, l.y);
 }
-/**
- * Render icon
- * @param l
- */
-function rIcon(l) {
-  const x2 = l.x+l.w-1,
-    y2 = l.y+l.h-1;
-  switch(l.icon) {
-    case "pause":
-      const w13 = l.w/3;
-      g.drawRect(l.x, l.y, l.x+w13, y2);
-      g.drawRect(l.x+l.w-w13, l.y, x2, y2);
-      break;
-    case "play":
-      g.drawPoly([
-        l.x, l.y,
-        x2, l.y+l.h/2,
-        l.x, y2,
-      ], true);
-      break;
-    case "previous":
-      const w15 = l.w*1/5;
-      g.drawPoly([
-        x2, l.y,
-        l.x+w15, l.y+l.h/2,
-        x2, y2,
-      ], true);
-      g.drawRect(l.x, l.y, l.x+w15, y2);
-      break;
-    case "next":
-      const w45 = l.w*4/5;
-      g.drawPoly([
-        l.x, l.y,
-        l.x+w45, l.y+l.h/2,
-        l.x, y2,
-      ], true);
-      g.drawRect(l.x+w45, l.y, x2, y2);
-      break;
-    default: // red X
-      console.log(`Unknown icon: ${l.icon}`);
-      g.setColor("#f00")
-        .drawRect(l.x, l.y, x2, y2)
-        .drawLine(l.x, l.y, x2, y2)
-        .drawLine(l.x, y2, x2, l.y);
-  }
-}
+
+
 let layout;
 function makeUI() {
-  global.gbmusic_active = true; // we don't need our widget (needed for <2.09 devices)
   Bangle.loadWidgets();
   Bangle.drawWidgets();
-  delete (global.gbmusic_active);
   const Layout = require("Layout");
   layout = new Layout({
     type: "v", c: [
       {
         type: "h", fillx: 1, c: [
-          {id: "time", type: "txt", label: "88:88", valign: -1, halign: -1, font: "8%", bgCol: g.theme.bg},
           {fillx: 1},
-          {id: "num", type: "txt", label: "88:88", valign: -1, halign: 1, font: "12%", bgCol: g.theme.bg},
-          BANGLE2 ? {} : {id: "up", type: "txt", label: " +", font: "6x8:2"},
+          {id: "num", type: "txt", label: "", valign: -1, halign: -1, font: "12%", bgCol: g.theme.bg},
+          BANGLE2 ? {} : {id: "up", type: "txt", label: " +", halign: 1, font: "6x8:2"},
         ],
       },
       {id: "title", type: "custom", label: "", fillx: 1, filly: 2, offset: null, font: "Vector:20%", render: rTitle, bgCol: g.theme.bg},
       {id: "artist", type: "custom", label: "", fillx: 1, filly: 1, size: 30, render: rInfo, bgCol: g.theme.bg},
-      {id: "album", type: "custom", label: "", fillx: 1, filly: 1, size: 20, render: rInfo, bgCol: g.theme.bg},
-      {height: 10},
       {
         type: "h", c: [
-          {width: 3},
-          {id: "prev", type: "custom", height: 15, width: 15, icon: "previous", render: rIcon, bgCol: g.theme.bg},
-          {id: "date", type: "txt", halign: 0, valign: 1, label: "", font: "8%", fillx: 1, bgCol: g.theme.bg},
-          {id: "next", type: "custom", height: 15, width: 15, icon: "next", render: rIcon, bgCol: g.theme.bg},
-          BANGLE2 ? {width: 3} : {id: "down", type: "txt", label: " -", font: "6x8:2"},
+          {id: "album", type: "custom", label: "", fillx: 1, filly: 1, size: 20, render: rInfo, bgCol: g.theme.bg},
+          BANGLE2 ? {} : {id: "down", type: "txt", label: " -", font: "6x8:2"},
         ],
       },
       {height: 10},
@@ -212,20 +160,6 @@ function makeUI() {
 ///////////////////////
 // Self-repeating timeouts
 ///////////////////////
-
-// Clock
-let tock = -1;
-function tick() {
-  if (!BANGLE2 && !Bangle.isLCDOn()) {
-    return;
-  }
-  const now = new Date();
-  if (now.getHours()*60+now.getMinutes()!==tock) {
-    drawDateTime();
-    tock = now.getHours()*60+now.getMinutes();
-  }
-  setTimeout(tick, 1000); // we only show minute precision anyway
-}
 
 // Fade out while paused and auto closing
 let fade = null;
@@ -273,40 +207,12 @@ function scrollStop() {
 ////////////////////
 // Drawing functions
 ////////////////////
-/**
- * Draw date and time
- */
-function drawDateTime() {
-  const now = new Date();
-  const l = require("locale");
-  const is12 = (require("Storage").readJSON("setting.json", 1) || {})["12hour"];
-  if (is12) {
-    const d12 = new Date(now.getTime());
-    const hour = d12.getHours();
-    if (hour===0) {
-      d12.setHours(12);
-    } else if (hour>12) {
-      d12.setHours(hour-12);
-    }
-    layout.time.label = l.time(d12, true)+l.meridian(now);
-  } else {
-    layout.time.label = l.time(now, true);
-  }
-  layout.date.label = require("locale").date(now, true);
-  layout.render();
-}
 
 function drawControls() {
-  let l = layout;
+  if (BANGLE2) return;
   const cc = a => (a ? "#f00" : "#0f0"); // control color: red for active, green for inactive
-  if (!BANGLE2) {
-    l.up.col = cc("volumeup" in tCommand);
-    l.down.col = cc("volumedown" in tCommand);
-  }
-  l.prev.icon = (stat==="play") ? "pause" : "previous";
-  l.prev.col = cc("prev" in tCommand || "pause" in tCommand);
-  l.next.icon = (stat==="play") ? "next" : "play";
-  l.next.col = cc("next" in tCommand || "play" in tCommand);
+  layout.up.col = cc("volumeup" in tCommand);
+  layout.down.col = cc("volumedown" in tCommand);
   layout.render();
 }
 
@@ -331,7 +237,7 @@ function formatNum(info) {
  * Update music info
  * @param {Object} info - Gadgetbridge musicinfo event
  */
-function musicInfo(info) {
+function info(info) {
   scrollStop();
   layout.title.label = info.track || "";
   layout.album.label = info.album || "";
@@ -341,6 +247,7 @@ function musicInfo(info) {
   layout.album.col = infoColor("album");
   layout.artist.col = infoColor("artist");
   layout.num.label = formatNum(info);
+  layout.update();
   layout.render();
   rTitle(layout.title); // force redraw of title, or scroller might break
   // reset auto exit interval
@@ -360,7 +267,7 @@ let tPxt, tIxt; // Timeouts to eXiT when Paused/Inactive for too long
  * Update music state
  * @param {Object} e - Gadgetbridge musicstate event
  */
-function musicState(e) {
+function state(e) {
   stat = e.state;
   // if paused for five minutes, load the clock
   // (but timeout resets if we get new info, even while paused)
@@ -460,9 +367,10 @@ function handleButton2Press() {
 let tCommand = {};
 /**
  * Send command and highlight corresponding control
- * @param {string} command - "play"/"pause"/"next"/"previous"/"volumeup"/"volumedown"
+ * @param {"play"|"pause"|"playpause"|"next"|"previous"|"volumeup"|"volumedown"} command
  */
 function sendCommand(command) {
+  Bluetooth.println("");
   Bluetooth.println(JSON.stringify({t: "music", n: command}));
   // for control color
   if (command in tCommand) {
@@ -475,37 +383,22 @@ function sendCommand(command) {
   drawControls();
 }
 
-// touch/swipe: navigation
+function handleTouch(btn, pos) {
+  if (pos === undefined || pos.y >= Bangle.appRect.y) {
+    togglePlay();
+  }
+}
+
 function togglePlay() {
-  sendCommand(stat==="play" ? "pause" : "play");
-}
-function pausePrev() {
-  sendCommand(stat==="play" ? "pause" : "previous");
-}
-function nextPlay() {
-  sendCommand(stat==="play" ? "next" : "play");
+  sendCommand("playpause");
 }
 
 /**
  * Setup touch+swipe for Bangle.js 1
  */
 function touch1() {
-  Bangle.on("touch", side => {
-    if (!Bangle.isLCDOn()) {return;} // for <2v10 firmware
-    switch(side) {
-      case 1:
-        pausePrev();
-        break;
-      case 2:
-        nextPlay();
-        break;
-      default:
-        togglePlay();
-        break;
-    }
-  });
+  Bangle.on("touch", handleTouch);
   Bangle.on("swipe", dir => {
-    if (!Bangle.isLCDOn()) {return;} // for <2v10 firmware
     sendCommand(dir===1 ? "previous" : "next");
   });
 }
@@ -513,16 +406,7 @@ function touch1() {
  * Setup touch+swipe for Bangle.js 2
  */
 function touch2() {
-  Bangle.on("touch", (side, xy) => {
-    const ar = Bangle.appRect;
-    if (xy.x<ar.x+ar.w/3) {
-      pausePrev();
-    } else if (xy.x>ar.x+ar.w*2/3) {
-      nextPlay();
-    } else {
-      togglePlay();
-    }
-  });
+  Bangle.on("touch", handleTouch);
   // swiping
   let drag;
   Bangle.on("drag", e => {
@@ -555,10 +439,9 @@ function startLCDWatch() {
   Bangle.on("lcdPower", (on) => {
     if (on) {
       // redraw and resume scrolling
-      tick();
       layout.render();
       fadeOut();
-      if (offset.offset!==null) {
+      if (layout.title.offset!==null) { // Making an assumption about what offset.offset was supposed to be
         if (!iScroll) {
           iScroll = setInterval(scroll, 200);
         }
@@ -584,8 +467,8 @@ function startEmulator() {
       println: (line) => {console.log("Bluetooth:", line);},
     };
     // some example info
-    GB({"t": "musicinfo", "artist": "Some Artist Name", "album": "The Album Name", "track": "The Track Title Goes Here", "dur": 241, "c": 2, "n": 2});
-    GB({"t": "musicstate", "state": "play", "position": 0, "shuffle": 1, "repeat": 1});
+    info({"t": "musicinfo", "artist": "Some Artist Name", "album": "The Album Name", "track": "The Track Title Goes Here", "dur": 241, "c": 2, "n": 2});
+    state({"t": "musicstate", "state": "play", "position": 0, "shuffle": 1, "repeat": 1});
   }
 }
 function startWatches() {
@@ -596,27 +479,7 @@ function startWatches() {
 
 function start() {
   makeUI();
-  // start listening for music updates
-  const _GB = global.GB;
-  global.GB = (event) => {
-    // we eat music events!
-    switch(event.t) {
-      case "musicinfo":
-        musicInfo(event);
-        break;
-      case "musicstate":
-        musicState(event);
-        break;
-      default:
-        // pass on other events
-        if (_GB) {
-          setTimeout(_GB, 0, event);
-        }
-        return;
-    }
-  };
   startWatches();
-  tick();
   startEmulator();
 }
 
@@ -625,11 +488,11 @@ function init() {
   let saved = require("Storage").readJSON("gbmusic.load.json", true);
   require("Storage").erase("gbmusic.load.json");
   if (saved) {
-    // autoloaded: load state was saved by widget
+    // autoloaded: load state as saved by widget
     auto = true;
     start();
-    musicInfo(saved.info);
-    musicState(saved.state);
+    info(saved.info);
+    state(saved.state);
     return;
   }
 

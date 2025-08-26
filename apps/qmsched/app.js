@@ -1,10 +1,11 @@
 Bangle.loadWidgets();
 Bangle.drawWidgets();
 
-const modeNames = ["Off", "Alarms", "Silent"];
-
+const modeNames = [/*LANG*/"Off", /*LANG*/"Alarms", /*LANG*/"Silent"];
+const B2 = process.env.HWVERSION===2;
 // load global settings
-let bSettings = require('Storage').readJSON('setting.json',true)||{};
+const STORAGE = require('Storage');
+let bSettings = STORAGE.readJSON('setting.json',true)||{};
 let current = 0|bSettings.quiet;
 delete bSettings; // we don't need any other global settings
 
@@ -17,8 +18,8 @@ delete bSettings; // we don't need any other global settings
  * Save settings to qmsched.json
  */
 function save() {
-  require('Storage').writeJSON('qmsched.json', settings);
-  eval(require('Storage').read('qmsched.boot.js')); // apply new schedules right away
+  STORAGE.writeJSON('qmsched.json', settings);
+  eval(STORAGE.read('qmsched.boot.js')); // apply new schedules right away
 }
 function get(key, def) {
   return (key in settings) ? settings[key] : def;
@@ -37,12 +38,12 @@ let settings,
  * Load settings file, check if we need to migrate old setting formats to new
  */
 function loadSettings() {
-  settings = require('Storage').readJSON("qmsched.json", true) || {};
+  settings = STORAGE.readJSON("qmsched.json", true) || {};
 
   if (Array.isArray(settings)) {
     // migrate old file (plain array of schedules, qmOptions stored in global settings file)
-    require("Storage").erase("qmsched.json"); // need to erase old file, or Things Break, somehow...
-    let bOptions = require('Storage').readJSON('setting.json',true)||{};
+    STORAGE.erase("qmsched.json"); // need to erase old file, or Things Break, somehow...
+    let bOptions = STORAGE.readJSON('setting.json',true)||{};
     settings = {
       options: bOptions.qmOptions || {},
       scheds: settings,
@@ -51,7 +52,7 @@ function loadSettings() {
     save();
     // and clean up qmOptions from global settings file
     delete bOptions.qmOptions;
-    require('Storage').writeJSON('setting.json',bOptions);
+    STORAGE.writeJSON('setting.json',bOptions);
   }
   // apply defaults
   settings = Object.assign({
@@ -82,8 +83,7 @@ function formatTime(t) {
  * Apply theme
  */
 function applyTheme() {
-  const theme = (require("Storage").readJSON("setting.json", 1) || {}).theme;
-  if (theme && theme.dark===g.theme.dark) return; // already correct
+  const theme = (STORAGE.readJSON("setting.json", 1) || {}).theme;
   g.theme = theme;
   delete g.reset;
   g._reset = g.reset;
@@ -93,6 +93,33 @@ function applyTheme() {
   Bangle.drawWidgets();
   delete m.lastIdx; // force redraw
   m.draw();
+}
+
+/**
+ * This creates menu entries for setting themes. This code is lifted from the setting app.
+ * @returns 
+ */
+function showThemeMenu(back, quiet){
+  const option = quiet ? "quietTheme" : "normalTheme";
+  function cl(x) { return g.setColor(x).getColor(); }
+  var themesMenu = {
+    '':{title:/*LANG*/'Theme', back: back},
+    /*LANG*/'Default': ()=>{
+      unset(option);
+      back();
+    }
+  };
+
+  STORAGE.list(/^.*\.theme$/).forEach(
+    n => {
+      let newTheme = STORAGE.readJSON(n);
+      themesMenu[newTheme.name ? newTheme.name : n] = () => {
+        set(option, n);
+        back();
+      };
+    }
+  );
+  E.showMenu(themesMenu);
 }
 
 /**
@@ -109,34 +136,25 @@ function setAppQuietMode(mode) {
 
 let m;
 function showMainMenu() {
-  let menu = {
-    "": {"title": "Quiet Mode"},
-    "< Exit": () => load()
-  };
-  // "Current Mode""Silent" won't fit on Bangle.js 2
-  menu["Current"+((process.env.HWVERSION===2) ? "" : " Mode")] = {
+  let menu = {"": {"title": /*LANG*/"Quiet Mode"}};
+  menu[B2 ? "< Back" : /*LANG*/"< Exit"] = () => {load();};
+  menu[/*LANG*/"Current Mode"] = {
     value: current,
     min:0, max:2, wrap: true,
-    format: () => modeNames[current],
+    format: v => modeNames[v],
     onchange: require("qmsched").setMode, // library calls setAppMode(), which updates `current`
   };
   scheds.sort((a, b) => (a.hr-b.hr));
   scheds.forEach((sched, idx) => {
-    menu[formatTime(sched.hr)] = {
-      format: () => modeNames[sched.mode], // abuse format to right-align text
-      onchange: () => {
-        m.draw = ()=> {}; // prevent redraw of main menu over edit menu (needed because we abuse format/onchange)
-        showEditMenu(idx);
-      }
-    };
+    menu[formatTime(sched.hr)] = () => { showEditMenu(idx); };
+    menu[formatTime(sched.hr)].format = () => modeNames[sched.mode]+' >'; // this does nothing :-(
   });
-  menu["Add Schedule"] = () => showEditMenu(-1);
-  menu["Switch Theme"] = {
+  menu[/*LANG*/"Add Schedule"] = () => showEditMenu(-1);
+  menu[/*LANG*/"Switch Theme"] = {
     value: !!get("switchTheme"),
-    format: v => v ? /*LANG*/"Yes" : /*LANG*/"No",
     onchange: v => v ? set("switchTheme", v) : unset("switchTheme"),
   };
-  menu["LCD Settings"] = () => showOptionsMenu();
+  menu[/*LANG*/"Options"] = () => showOptionsMenu();
   m = E.showMenu(menu);
 }
 
@@ -150,25 +168,23 @@ function showEditMenu(index) {
     mins = Math.round((s.hr-hrs)*60);
     mode = s.mode;
   }
-  const menu = {
-    "": {"title": (isNew ? "Add" : "Edit")+" Schedule"},
-    "< Cancel": () => showMainMenu(),
-    "Hours": {
-      value: hrs,
-      min:0, max:23, wrap:true,
-      onchange: v => {hrs = v;},
-    },
-    "Minutes": {
-      value: mins,
-      min:0, max:55, step:5, wrap:true,
-      onchange: v => {mins = v;},
-    },
-    "Switch to": {
-      value: mode,
-      min:0, max:2, wrap:true,
-      format: v => modeNames[v],
-      onchange: v => {mode = v;},
-    },
+  let menu = {"": {"title": (isNew ? /*LANG*/"Add Schedule" : /*LANG*/"Edit Schedule")}};
+  menu[B2 ? "< Back" : /*LANG*/"< Cancel"] =  () => showMainMenu();
+  menu[/*LANG*/"Hours"] = {
+    value: hrs,
+    min:0, max:23, wrap:true,
+    onchange: v => {hrs = v;},
+  };
+  menu[/*LANG*/"Minutes"] = {
+    value: mins,
+    min:0, max:55, step:5, wrap:true,
+    onchange: v => {mins = v;},
+  };
+  menu[/*LANG*/"Switch to"] = {
+    value: mode,
+    min:0, max:2, wrap:true,
+    format: v => modeNames[v],
+    onchange: v => {mode = v;},
   };
   function getSched() {
     return {
@@ -176,7 +192,7 @@ function showEditMenu(index) {
       mode: mode,
     };
   }
-  menu["> Save"] = function() {
+  menu[B2 ? /*LANG*/"Save" : /*LANG*/"> Save"] = function() {
     if (isNew) {
       scheds.push(getSched());
     } else {
@@ -186,7 +202,7 @@ function showEditMenu(index) {
     showMainMenu();
   };
   if (!isNew) {
-    menu["> Delete"] = function() {
+    menu[B2 ? /*LANG*/"Delete" : /*LANG*/"> Delete"] = function() {
       scheds.splice(index, 1);
       save();
       showMainMenu();
@@ -196,7 +212,7 @@ function showEditMenu(index) {
 }
 
 function showOptionsMenu() {
-  const disabledFormat = v => v ? "Off" : "-";
+  const disabledFormat = v => v ? /*LANG*/"Off" : "-";
   function toggle(option) {
     // we disable wakeOn* events by setting them to `false` in options
     // not disabled = not present in options at all
@@ -209,9 +225,9 @@ function showOptionsMenu() {
   }
   let resetTimeout;
   const oMenu = {
-    "": {"title": "LCD Settings"},
+    "": {"title": /*LANG*/"LCD Settings"},
     "< Back": () => showMainMenu(),
-    "LCD Brightness": {
+    /*LANG*/"LCD Brightness": {
       value: get("brightness", 0),
       min: 0, // 0 = use default
       max: 1,
@@ -233,7 +249,7 @@ function showOptionsMenu() {
         }
       },
     },
-    "LCD Timeout": {
+    /*LANG*/"LCD Timeout": {
       value: get("timeout", 0),
       min: 0, // 0 = use default  (no constant on for quiet mode)
       max: 60,
@@ -246,22 +262,26 @@ function showOptionsMenu() {
     },
     // we disable wakeOn* events by overwriting them as false in options
     // not disabled = not present in options at all
-    "Wake on FaceUp": {
+    /*LANG*/"Wake on FaceUp": {
       value: "wakeOnFaceUp" in options,
       format: disabledFormat,
       onchange: () => {toggle("wakeOnFaceUp");},
     },
-    "Wake on Touch": {
+    /*LANG*/"Wake on Touch": {
       value: "wakeOnTouch" in options,
       format: disabledFormat,
       onchange: () => {toggle("wakeOnTouch");},
     },
-    "Wake on Twist": {
+    /*LANG*/"Wake on Twist": {
       value: "wakeOnTwist" in options,
       format: disabledFormat,
       onchange: () => {toggle("wakeOnTwist");},
     },
   };
+
+  oMenu[/*LANG*/"Normal Theme"] = () => showThemeMenu(showOptionsMenu, false);
+  oMenu[/*LANG*/"Quiet Theme"] = () => showThemeMenu(showOptionsMenu, true);
+
   m = E.showMenu(oMenu);
 }
 

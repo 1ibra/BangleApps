@@ -1,61 +1,172 @@
-var btm = g.getHeight()-1;
-var eventInt = null;
-var eventBt = null;
-var counterInt = 0;
-var counterBt = 0;
+const BPM_FONT_SIZE="19%";
+const VALUE_TIMEOUT=3000;
 
+var BODY_LOCS = {
+  0: 'Other',
+  1: 'Chest',
+  2: 'Wrist',
+  3: 'Finger',
+  4: 'Hand',
+  5: 'Earlobe',
+  6: 'Foot',
+};
 
-function draw(y, event, type, counter) {
-  var px = g.getWidth()/2;
-  g.reset();
-  g.setFontAlign(0,0);
-  g.clearRect(0,y,g.getWidth(),y+75);
-  if (type == null || event == null || counter == 0) return;
-  var str = event.bpm + "";
-  g.setFontVector(40).drawString(str,px,y+20);
-  str = "Confidence: " + event.confidence;
-  g.setFontVector(12).drawString(str,px,y+50);
-  str = "Event: " + type;
-  if (type == "HRM") str += " Source: " + (event.src ? event.src : "internal");
-  g.setFontVector(12).drawString(str,px,y+60);
+var Layout = require("Layout");
+
+function border(l,c) {
+  g.setColor(c).drawLine(l.x+l.w*0.05, l.y-4, l.x+l.w*0.95, l.y-4);
 }
+
+function getRow(id, text, additionalInfo){
+  let additional = [];
+  let l = {
+    type:"h", c: [
+      {
+        type:"v",
+        width: g.getWidth()*0.4,
+        c: [
+          {type:"txt", halign:1, font:"8%", label:text, id:id+"text" },
+          {type:"txt", halign:1, font:BPM_FONT_SIZE, label:"--", id:id, bgCol: g.theme.bg }
+        ]
+      },{
+        type:undefined, fillx:1
+      },{
+        type:"v",
+        valign: -1,
+        width: g.getWidth()*0.45,
+        c: additional
+      },{
+        type:undefined, width:g.getWidth()*0.05
+      }
+    ]
+  };
+  for (let i of additionalInfo){
+    let label = {type:"txt", font:"6x8", label:i + ":" };
+    let value = {type:"txt", font:"6x8", label:"--", id:id + i };
+    additional.push({type:"h", halign:-1, c:[ label, {type:undefined, fillx:1}, value ]});
+  }
+
+  return l;
+}
+
+var layout = new Layout( {
+  type:"v", c: [
+    getRow("int", "INT", ["Confidence"]),
+    getRow("agg", "HRM", ["Confidence", "Source"]),
+    getRow("bt", "BT", ["Battery","Location","Contact", "RR", "Energy"]),
+    { type:undefined, height:8 } //dummy to protect debug output
+  ]
+}, {
+  lazy:false
+});
+
+var int,agg,bt;
+var firstEvent = true;
+
+function draw(){
+  if (!(int || agg || bt)) return;
+
+  if (firstEvent) {
+    g.clearRect(Bangle.appRect);
+    firstEvent = false;
+  }
+
+  let now = Date.now();
+
+  if (int && int.time > (now - VALUE_TIMEOUT)){
+    layout.int.label = int.bpm;
+    if (!isNaN(int.confidence)) layout.intConfidence.label = int.confidence;
+  } else {
+    layout.int.label = "--";
+    layout.intConfidence.label = "--";
+  }
+
+  if (agg && agg.time > (now - VALUE_TIMEOUT)){
+    layout.agg.label = agg.bpm;
+    if (!isNaN(agg.confidence)) layout.aggConfidence.label = agg.confidence;
+    if (agg.src) layout.aggSource.label = agg.src;
+  } else {
+    layout.agg.label = "--";
+    layout.aggConfidence.label = "--";
+    layout.aggSource.label = "--";
+  }
+
+  if (bt && bt.time > (now - VALUE_TIMEOUT)) {
+    layout.bt.label = bt.bpm;
+    if (!isNaN(bt.battery)) layout.btBattery.label = bt.battery + "%";
+    if (bt.rr) layout.btRR.label = bt.rr.join(",");
+    if (!isNaN(bt.location)) layout.btLocation.label = BODY_LOCS[bt.location];
+    if (bt.contact !== undefined) layout.btContact.label = bt.contact ? /*LANG*/"Yes":/*LANG*/"No";
+    if (!isNaN(bt.energy)) layout.btEnergy.label = bt.energy.toFixed(0) + "kJ";
+  } else {
+    layout.bt.label = "--";
+    layout.btBattery.label = "--";
+    layout.btRR.label = "--";
+    layout.btLocation.label = "--";
+    layout.btContact.label = "--";
+    layout.btEnergy.label = "--";
+  }
+  layout.clear();
+  layout.render();
+  let first = true;
+  for (let c of layout.l.c){
+    if (first) {
+      first = false;
+      continue;
+    }
+    if (c.type && c.type == "h")
+      border(c,g.theme.fg);
+  }
+}
+
+
+// This can get called for the boot code to show what's happening
+global.showStatusInfo = function(txt) {
+  var R = Bangle.appRect;
+  g.reset().clearRect(R.x,R.y2-8,R.x2,R.y2).setFont("6x8");
+  txt = g.wrapString(txt, R.w)[0];
+  g.setFontAlign(0,1).drawString(txt, (R.x+R.x2)/2, R.y2);
+};
 
 function onBtHrm(e) {
-  print("Event for BT " + JSON.stringify(e));
-  counterBt += 5;
-  eventBt = e;
+  bt = e;
+  bt.time = Date.now();
+  draw();
 }
 
-function onHrm(e) {
-  print("Event for Int " + JSON.stringify(e));
-  counterInt += 5;
-  eventInt = e;
+function onInt(e) {
+  int = e;
+  int.time = Date.now();
+  draw();
 }
+
+function onAgg(e) {
+  agg = e;
+  agg.time = Date.now();
+  draw();
+}
+
+var settings = require('Storage').readJSON("bthrm.json", true) || {};
 
 Bangle.on('BTHRM', onBtHrm);
-Bangle.on('HRM', onHrm);
+Bangle.on('HRM_int', onInt);
+Bangle.on('HRM', onAgg);
 
-Bangle.setHRMPower(1,'bthrm')
+
+Bangle.setHRMPower(1,'bthrm');
+if (!(settings.startWithHrm)){
+  Bangle.setBTHRMPower(1,'bthrm');
+}
 
 g.clear();
 Bangle.loadWidgets();
 Bangle.drawWidgets();
-
-g.reset().setFont("6x8",2).setFontAlign(0,0);
-g.drawString("Please wait...",g.getWidth()/2,g.getHeight()/2 - 16);
-
-function drawInt(){
-  counterInt--;
-  if (counterInt < 0) counterInt = 0;
-  if (counterInt > 5) counterInt = 5;
-  draw(24, eventInt, "HRM", counterInt);
-}
-function drawBt(){
-  counterBt--;
-  if (counterBt < 0) counterBt = 0;
-  if (counterBt > 5) counterBt = 5;
-  draw(100, eventBt, "BTHRM", counterBt);
+if (Bangle.setBTHRMPower){
+  g.reset().setFont("6x8",2).setFontAlign(0,0);
+  g.drawString("Please wait...",g.getWidth()/2,g.getHeight()/2);
+} else {
+  g.reset().setFont("6x8",2).setFontAlign(0,0);
+  g.drawString("BTHRM disabled",g.getWidth()/2,g.getHeight()/2);
 }
 
-var interval = setInterval(drawInt, 1000);
-var interval = setInterval(drawBt, 1000);
+E.on('kill', ()=>Bangle.setBTHRMPower(0,'bthrm'));
