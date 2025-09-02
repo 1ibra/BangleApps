@@ -653,10 +653,10 @@ function localeMenu() {
       },
     },
     /*LANG*/'City': {
-      value: E.clip(0|settings.city,0,cities.length-1),
+      value: E.clip(settings.city,0,cities.length-1),
       min: 0,
       max: cities.length-1,
-      format: v =>cities[E.clip(0|v,0,cities.length-1)],
+      format: v =>cities[E.clip(v,0,cities.length-1)],
       onchange: v => {
         settings.city = cities[v];
         updateSettings();
@@ -1092,3 +1092,4 @@ function showAltitude() {
 
 // Show the main menu
 pushMenu(mainMenu());
+
