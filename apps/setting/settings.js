@@ -658,7 +658,7 @@ function localeMenu() {
       max: cities.length-1,
       format: v =>cities[E.clip(0|v,0,cities.length-1)],
       onchange: v => {
-        settings.city = v;
+        settings.city = cities[v];
         updateSettings();
       }
     }
