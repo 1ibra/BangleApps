@@ -73,6 +73,7 @@ function resetSettings() {
     // clockHasWidgets: false,      // Does the clock in 'clock' contain the string 'Bangle.loadWidgets'
     "12hour" : false,               // 12 or 24 hour clock?
     firstDayOfWeek: 0,              // 0 -> Sunday (default), 1 -> Monday
+    city: "Jeddah",                    // 0 -> Sunday (default), 1 -> Monday
     brightness: 1,                  // LCD brightness from 0 to 1
     // welcomed : undefined/true (whether welcome app should show)
     options: {
@@ -618,6 +619,7 @@ function LCDMenu() {
 }
 
 function localeMenu() {
+  var cities = [/*LANG*/"Jeddah", /*LANG*/"Makkah", /*LANG*/"Riyadh", /*LANG*/"Madinah"];
   const localemenu = {
     '': { 'title': /*LANG*/'Locale' },
     '< Back': ()=>popMenu(systemMenu()),
@@ -649,6 +651,16 @@ function localeMenu() {
         settings["firstDayOfWeek"] = v;
         updateSettings();
       },
+    },
+    /*LANG*/'City': {
+      value: E.clip(0|settings.city,0,cities.length-1),
+      min: 0,
+      max: cities.length-1,
+      format: v =>cities[E.clip(0|v,0,cities.length-1)],
+      onchange: v => {
+        settings.city = v;
+        updateSettings();
+      }
     }
   };
   return localemenu;
