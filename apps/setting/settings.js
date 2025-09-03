@@ -653,7 +653,7 @@ function localeMenu() {
       },
     },
     /*LANG*/'City': {
-      value: E.clip(settings.city,0,cities.length-1),
+      value: E.clip(0|cities.indexOf(settings.city),0,cities.length-1),
       min: 0,
       max: cities.length-1,
       format: v =>cities[E.clip(v,0,cities.length-1)],
