@@ -1,9 +1,14 @@
 (() => {
   function draw() {
-    var id = NRF.getAddress().substr().substr(12).split(":");
-    g.reset().setColor(g.theme.dark ? "#0ff" : "#00f").setFont("6x8", 1);
-    g.drawString(id[0], this.x+2, this.y+4, true);
-    g.drawString(id[1], this.x+2, this.y+14, true);
+    let settings = require("Storage").readJSON('setting.json', 1);
+    g.reset().setFont("6x8", 2);
+    let city = settings.city;
+    g.drawString(city.toUpperCase().substr(0,3), this.x,2+this.y);
   }
-  WIDGETS["widid"] = { area:"tr", width:16, draw: draw };
+  // add your widget
+  WIDGETS["widcity"]={
+    area:"tr", // tl (top left), tr (top right), bl (bottom left), br (bottom right), be aware that not all apps support widgets at the bottom of the screen
+    width: 35, // how wide is the widget? You can change this and call Bangle.drawWidgets() to re-layout
+    draw:draw // called to draw the widget
+  };
 })();
